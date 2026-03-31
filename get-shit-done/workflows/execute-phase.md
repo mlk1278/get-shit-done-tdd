@@ -573,11 +573,23 @@ Phase {X} execution may have broken functionality from prior phases.
 
 Options:
 1. Fix regressions before verification (recommended)
-2. Continue to verification anyway (regressions will compound)
-3. Abort phase — roll back and re-plan
+2. Abort phase — roll back and re-plan
 ```
 
 Use AskUserQuestion to present the options.
+
+**Post-merge verification:** After regression tests, collect `env="post-merge"` commands from this phase's PLAN files:
+
+```bash
+grep -h 'env="post-merge"' ${PHASE_DIR}/*-PLAN.md 2>/dev/null | \
+  sed 's/.*>\(.*\)<.*/\1/' | sort -u
+```
+
+Run each unique command. Skip if none found.
+
+**All pass:** Proceed to verify_phase_goal.
+
+**Any fail:** Spawn `gsd-executor` to fix post-merge failures. Re-run once. If still failing: present to user with Fix or Abort options. Do NOT offer "Continue to verification anyway."
 </step>
 
 <step name="verify_phase_goal">

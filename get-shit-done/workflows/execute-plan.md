@@ -373,6 +373,26 @@ fi
 ```
 </step>
 
+<step name="test_passage_gate">
+Collect every `<automated>` command from the plan's task `<verify>` blocks. Exclude `env="post-merge"` commands (those run at phase level after merge).
+
+Run each remaining command.
+
+**All pass:** Continue to generate_user_setup.
+
+**Any fail:**
+1. Identify root cause.
+2. Fix the implementation, not the test.
+3. Re-run. Budget: 3 fix cycles per failure.
+4. Still failing after 3 cycles: STOP. Return checkpoint:
+
+**Plan:** {phase}-{plan}
+**Failing:** {test commands and output}
+**Tried:** {what was attempted}
+
+Do NOT create SUMMARY.md with failing tests. Tests pass or the plan is blocked.
+</step>
+
 <step name="generate_user_setup">
 ```bash
 grep -A 50 "^user_setup:" .planning/phases/XX-name/{phase}-{plan}-PLAN.md | head -50

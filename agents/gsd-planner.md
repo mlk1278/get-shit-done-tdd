@@ -168,17 +168,28 @@ Every task has four required fields:
 
 **<verify>:** How to prove the task is complete.
 
+**Nyquist Rule:** Every `<verify>` for a code-producing task MUST include a runnable `<automated>` command. Consult TESTING.md for the project's test runners and commands.
+
+- **New feature, component, endpoint, or interactive behavior:** Task MUST include a test file in `<files>` and a test command in `<automated>`. Use whatever runner TESTING.md specifies. If no test infrastructure exists, add a Wave 0 task to scaffold it first.
+- **Modification to existing tested code:** Reference the existing test. If the change alters behavior, update the test in the same task.
+- **Trivial change** (CSS tweak, copy edit, config, type-only file): Build/typecheck command is sufficient.
+- **`<automated>MISSING</automated>`:** Only valid when a separate Wave 0 task creates the test infrastructure itself.
+
+Use your judgment on the boundary — a one-line color change doesn't need a test, a new multi-step stepper component does. When in doubt, write the test. The cost of an unnecessary test is low; the cost of a human debugging an untested feature is high.
+
+**Execution environment:** Annotate commands that need all parallel plans merged:
+- `env="worktree"` (default, omit) — unit, component, single-feature tests. Runs during plan execution.
+- `env="post-merge"` — cross-feature, E2E tests needing all worktrees merged. Runs before phase verification.
+
 ```xml
 <verify>
-  <automated>pytest tests/test_module.py::test_behavior -x</automated>
+  <automated>[test runner from TESTING.md] [test file]</automated>
+  <automated env="post-merge">[E2E runner from TESTING.md] [spec file]</automated>
 </verify>
 ```
 
-- Good: Specific automated command that runs in < 60 seconds
+- Good: Specific command from TESTING.md that runs in < 60 seconds
 - Bad: "It works", "Looks good", manual-only verification
-- Simple format also accepted: `npm test` passes, `curl -X POST /api/auth/login` returns 200
-
-**Nyquist Rule:** Every `<verify>` must include an `<automated>` command. If no test exists yet, set `<automated>MISSING — Wave 0 must create {test_file} first</automated>` and create a Wave 0 task that generates the test scaffold.
 
 **<done>:** Acceptance criteria - measurable state of completion.
 - Good: "Valid credentials return 200 + JWT cookie, invalid credentials return 401"
@@ -262,6 +273,14 @@ This prevents the "scavenger hunt" anti-pattern where executors explore the code
 ```
 
 Exceptions where `tdd="true"` is not needed: `type="checkpoint:*"` tasks, configuration-only files, documentation, migration scripts, glue code wiring existing tested components, styling-only changes.
+
+## Frontend/UI Verification
+
+When TESTING.md documents component/unit infrastructure: UI tasks MUST include test files in `<files>` with `<automated>` commands.
+
+When TESTING.md documents E2E infrastructure: Plans changing user-visible behavior MUST include at least one `<automated env="post-merge">` E2E command.
+
+When TESTING.md shows no test infrastructure for a surface: Add a Wave 0 task to scaffold it. Never ship a plan with zero automated verification for new interactive features.
 
 ## User Setup Detection
 
@@ -446,9 +465,11 @@ Output: [Artifacts created]
 
 <task type="auto">
   <name>Task 1: [Action-oriented name]</name>
-  <files>path/to/file.ext</files>
+  <files>path/to/file.ext, path/to/file.test.ext</files>
   <action>[Specific implementation]</action>
-  <verify>[Command or check]</verify>
+  <verify>
+    <automated>npm test -- path/to/file.test.ext</automated>
+  </verify>
   <done>[Acceptance criteria]</done>
 </task>
 
@@ -1038,18 +1059,18 @@ Check for codebase map:
 ls .planning/codebase/*.md 2>/dev/null
 ```
 
-If exists, load relevant documents by phase type:
+**Rule:** Always load TESTING.md for code-producing phases. Skip only for pure config/docs phases.
 
 | Phase Keywords | Load These |
 |----------------|------------|
-| UI, frontend, components | CONVENTIONS.md, STRUCTURE.md |
-| API, backend, endpoints | ARCHITECTURE.md, CONVENTIONS.md |
-| database, schema, models | ARCHITECTURE.md, STACK.md |
+| UI, frontend, components | CONVENTIONS.md, STRUCTURE.md, TESTING.md |
+| API, backend, endpoints | ARCHITECTURE.md, CONVENTIONS.md, TESTING.md |
+| database, schema, models | ARCHITECTURE.md, STACK.md, TESTING.md |
 | testing, tests | TESTING.md, CONVENTIONS.md |
-| integration, external API | INTEGRATIONS.md, STACK.md |
-| refactor, cleanup | CONCERNS.md, ARCHITECTURE.md |
+| integration, external API | INTEGRATIONS.md, STACK.md, TESTING.md |
+| refactor, cleanup | CONCERNS.md, ARCHITECTURE.md, TESTING.md |
 | setup, config | STACK.md, STRUCTURE.md |
-| (default) | STACK.md, ARCHITECTURE.md |
+| (default) | STACK.md, ARCHITECTURE.md, TESTING.md |
 </step>
 
 <step name="identify_phase">
@@ -1178,6 +1199,37 @@ Apply goal-backward methodology (see goal_backward section):
 3. Derive required artifacts (specific files)
 4. Derive required wiring (connections)
 5. Identify key links (critical connections)
+</step>
+
+<step name="phase_integration_test">
+After all plans are grouped and waved, add a final task to the **last plan in the highest wave** that writes integration/E2E tests covering the phase's user-facing flows.
+
+**When to include:**
+- Phase adds new user-facing features, pages, or workflows
+- Phase adds new API endpoints or data flows
+- Multiple plans contribute to one cumulative feature
+
+**When to skip:**
+- Phase is pure refactoring with no behavior change
+- Phase has only one plan with one task (the task-level tests are sufficient)
+- Phase is config/infrastructure only
+
+**The task:**
+```xml
+<task type="auto">
+  <name>Task N: Phase integration tests</name>
+  <files>[test files covering cross-plan flows]</files>
+  <action>Write integration tests that verify the phase's complete user-facing flows work end-to-end.
+  Cover the critical paths that span multiple tasks/plans in this phase.
+  Consult TESTING.md for the project's test runner and patterns.</action>
+  <verify>
+    <automated env="post-merge">[test runner from TESTING.md] [integration test files]</automated>
+  </verify>
+  <done>Integration tests pass, covering [list the key flows]</done>
+</task>
+```
+
+These tests are marked `env="post-merge"` because they need all parallel plans merged. They run in the `regression_gate` before phase verification, and in future phases as regression checks.
 </step>
 
 <step name="estimate_scope">

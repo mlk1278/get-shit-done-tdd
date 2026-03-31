@@ -13,6 +13,20 @@ created: {date}
 
 ---
 
+## Visual Identity
+
+| Property | Value |
+|----------|-------|
+| Aesthetic direction | {one phrase: e.g., "warm editorial", "dense utilitarian", "soft geometric"} |
+| Signature detail | {one memorable element: e.g., "oversized serif headings", "monospace accents on data", "rounded 16px card corners with subtle grain"} |
+
+**Anti-patterns — this project must NOT:**
+- {e.g., "use Inter/system fonts — project uses [specific font] for personality"}
+- {e.g., "default to purple gradient hero sections"}
+- {e.g., "use identical card layouts for every content type"}
+
+---
+
 ## Design System
 
 | Property | Value |

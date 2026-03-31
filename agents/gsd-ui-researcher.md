@@ -142,6 +142,19 @@ Read preset from `npx shadcn info` output. Pre-populate design contract with det
 
 Ask ONLY what REQUIREMENTS.md, CONTEXT.md, and RESEARCH.md did not already answer.
 
+### Visual Identity
+- **Aesthetic direction:** One phrase describing the feel (e.g., "warm editorial", "dense utilitarian", "soft geometric"). If the project has existing UI, derive this from what's there — don't invent a new direction.
+- **Signature detail:** What's the one visual element someone would remember? A distinctive font pairing, an unusual layout choice, a specific texture or shadow treatment.
+- **Anti-patterns:** List 3+ things this project must NOT do. Push hard against generic LLM-generated aesthetics:
+  - Default system/sans-serif fonts (Inter, Roboto, Arial) unless the project already uses them intentionally
+  - Purple/blue gradient hero sections on white backgrounds
+  - Identical rounded card grids for every content type
+  - Uniform gray-on-white with a single blue accent
+  - Cookie-cutter spacing with no visual rhythm variation
+  - Stock decorative gradients that don't relate to the brand
+
+  Scan the existing codebase for patterns that are already generic and call them out. If the project is greenfield, the anti-pattern list prevents the executor from falling into defaults.
+
 ### Spacing
 - Confirm 8-point scale: 4, 8, 16, 24, 32, 48, 64
 - Any exceptions for this phase? (e.g. icon-only touch targets at 44px)

@@ -3,7 +3,7 @@
   "version": "1.30.0",
   "description": "A meta-prompting, context engineering and spec-driven development system for Claude Code, OpenCode, Gemini and Codex by TÂCHES.",
   "bin": {
-    "get-shit-done-cc": "bin/install.js"
+    "get-shit-done-custom": "bin/install.js"
   },
   "files": [
     "bin",

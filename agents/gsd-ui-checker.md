@@ -80,19 +80,30 @@ fix_hint: "Replace with action-specific label like 'Send Message' or 'Create Acc
 
 ## Dimension 2: Visuals
 
-**Question:** Are focal points and visual hierarchy declared?
+**Question:** Are focal points, visual hierarchy, and visual identity declared?
 
 **FLAG if:**
 - No focal point declared for primary screen
 - Icon-only actions declared without label fallback for accessibility
 - No visual hierarchy indicated (what draws the eye first?)
 
-**Example issue:**
+**BLOCK if:**
+- No Visual Identity section exists (aesthetic direction, signature detail, anti-patterns)
+- Anti-patterns list is empty or contains fewer than 3 items
+- Font choice is Inter, Roboto, Arial, or system-ui without explicit justification
+
+**Example issues:**
 ```yaml
 dimension: 2
 severity: FLAG
 description: "No focal point declared — executor will guess visual priority"
 fix_hint: "Declare which element is the primary visual anchor on the main screen"
+```
+```yaml
+dimension: 2
+severity: BLOCK
+description: "No Visual Identity section — executor will produce generic output"
+fix_hint: "Add aesthetic direction, signature detail, and 3+ anti-patterns"
 ```
 
 ## Dimension 3: Color

@@ -18,7 +18,7 @@ TDD is about design quality, not coverage metrics. The red-green-refactor cycle 
 - State machines and workflows
 - Utility functions with clear specifications
 
-**Skip TDD (use standard plan with `type="auto"` tasks):**
+**Skip TDD ceremony (use standard plan with `type="auto"` tasks):**
 - UI layout, styling, visual components
 - Configuration changes
 - Glue code connecting existing components
@@ -26,9 +26,11 @@ TDD is about design quality, not coverage metrics. The red-green-refactor cycle 
 - Simple CRUD with no business logic
 - Exploratory prototyping
 
+**IMPORTANT: "Skip TDD" means skip the RED→GREEN→REFACTOR cycle and dedicated `type: tdd` plan. It does NOT mean skip testing.** Every code-producing task still requires automated verification per the Nyquist Rule. UI components need component/interaction tests. Standard plans need `<automated>` commands in `<verify>`. The only things that can use a bare typecheck (`tsc --noEmit`) as their sole verification are pure config changes and type-only files.
+
 **Heuristic:** Can you write `expect(fn(input)).toBe(output)` before writing `fn`?
-→ Yes: Create a TDD plan
-→ No: Use standard plan, add tests after if needed
+→ Yes: Create a TDD plan (dedicated `type: tdd`, RED→GREEN→REFACTOR)
+→ No: Standard plan, but task MUST still include test in `<files>` and `<automated>` in `<verify>`
 </when_to_use_tdd>
 
 <tdd_plan_structure>

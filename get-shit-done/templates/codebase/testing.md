@@ -171,6 +171,24 @@ export const mockUsers = [/* ... */];
 - [Scope: e.g., "test full user flows"]
 - [Location: e.g., "e2e/ directory separate from unit tests"]
 
+## Verification Commands by Scope
+
+### Worktree-safe (fast feedback)
+Commands that work in an isolated branch:
+- Unit tests: `[exact command]`
+- Component tests: `[exact command]`
+
+### Post-merge (full integration)
+Commands requiring all parallel work merged:
+- E2E tests: `[exact command]`
+- Cross-feature integration: `[exact command]`
+
+## Coverage Gaps
+
+Surfaces with no automated test coverage. Planners use this to create Wave 0 scaffolding tasks.
+
+- [ ] [surface] — [what's missing]
+
 ## Common Patterns
 
 **Async Testing:**
@@ -391,6 +409,25 @@ open coverage/index.html
 **E2E Tests:**
 - Not currently used
 - CLI integration tested manually
+
+## Verification Commands by Scope
+
+### Worktree-safe (fast feedback)
+Commands that work in an isolated branch:
+- Unit tests: `npm test -- path/to/file.test.ts`
+- Component tests: `npm test -- --filter=component-name`
+
+### Post-merge (full integration)
+Commands requiring all parallel work merged:
+- E2E tests: `not currently used`
+- Cross-feature integration: `not currently used`
+
+## Coverage Gaps
+
+Surfaces with no automated test coverage. Planners use this to create Wave 0 scaffolding tasks.
+
+- [ ] CLI integration — manual testing only, no automated CLI tests
+- [ ] E2E user flows — no Playwright or similar framework configured
 
 ## Common Patterns
 
