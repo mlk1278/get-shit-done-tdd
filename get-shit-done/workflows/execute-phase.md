@@ -72,6 +72,16 @@ Parse JSON for: `executor_model`, `verifier_model`, `commit_docs`, `parallelizat
 **If `plan_count` is 0:** Error — no plans found in phase.
 **If `state_exists` is false but `.planning/` exists:** Offer reconstruct or continue.
 
+**Superpowers execution mode detection:**
+```bash
+SUPERPOWERS_EXEC=$(node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" config-get workflow.superpowers_execution 2>/dev/null || echo "false")
+```
+If `SUPERPOWERS_EXEC` is `"true"`: plans will be executed via the superpowers bridge workflow
+(`execute-plan-superpowers.md`) instead of the standard gsd-executor. This enables per-task
+subagent dispatch with two-stage review (spec compliance + code quality) and TDD enforcement.
+The bridge handles all GSD state tracking (STATE.md, SUMMARY.md, commits) identically to
+standard execution — only the internal execution quality loop changes.
+
 When `parallelization` is false, plans within a wave execute sequentially.
 
 **Runtime detection for Copilot:**
@@ -223,6 +233,10 @@ Execute each selected wave in sequence. Within a wave: parallel if `PARALLELIZAT
    For 200k models, this keeps orchestrator context lean (~10-15%).
    For 1M+ models (Opus 4.6, Sonnet 4.6), richer context can be passed directly.
 
+   **If `SUPERPOWERS_EXEC` is `"true"`:** Use the superpowers bridge workflow instead.
+   Spawn one agent per plan that follows `execute-plan-superpowers.md` — this agent
+   becomes the controller, dispatching per-task implementers with review loops internally.
+
    ```
    Task(
      subagent_type="gsd-executor",
@@ -231,6 +245,11 @@ Execute each selected wave in sequence. Within a wave: parallel if `PARALLELIZAT
      prompt="
        <objective>
        Execute plan {plan_number} of phase {phase_number}-{phase_name}.
+       {IF SUPERPOWERS_EXEC:}
+       Use superpowers execution: dispatch per-task implementer subagents with
+       spec compliance and code quality review after each task. Follow TDD for
+       tdd='true' tasks. All GSD tracking (STATE.md, SUMMARY.md, commits) applies.
+       {ENDIF}
        Commit each task atomically. Create SUMMARY.md. Update STATE.md and ROADMAP.md.
        </objective>
 
@@ -243,7 +262,11 @@ Execute each selected wave in sequence. Within a wave: parallel if `PARALLELIZAT
        </parallel_execution>
 
        <execution_context>
+       {IF SUPERPOWERS_EXEC:}
+       @~/.claude/get-shit-done/workflows/execute-plan-superpowers.md
+       {ELSE:}
        @~/.claude/get-shit-done/workflows/execute-plan.md
+       {ENDIF}
        @~/.claude/get-shit-done/templates/summary.md
        @~/.claude/get-shit-done/references/checkpoints.md
        @~/.claude/get-shit-done/references/tdd.md

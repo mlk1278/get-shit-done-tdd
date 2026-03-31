@@ -59,6 +59,14 @@ PLAN_START_EPOCH=$(date +%s)
 ```
 </step>
 
+<step name="check_superpowers_mode">
+```bash
+SUPERPOWERS_EXEC=$(node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" config-get workflow.superpowers_execution 2>/dev/null || echo "false")
+```
+
+**If `SUPERPOWERS_EXEC` is `"true"`:** Follow `~/.claude/get-shit-done/workflows/execute-plan-superpowers.md` instead of the standard execution patterns below. That workflow handles per-task dispatch with review loops while maintaining all GSD state tracking. Skip to its process flow.
+</step>
+
 <step name="parse_segments">
 ```bash
 grep -n "type=\"checkpoint" .planning/phases/XX-name/{phase}-{plan}-PLAN.md
