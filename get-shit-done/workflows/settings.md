@@ -32,6 +32,7 @@ Parse current values (default to `true` if not present):
 - `workflow.nyquist_validation` — validation architecture research during plan-phase (default: true if absent)
 - `workflow.ui_phase` — generate UI-SPEC.md design contracts for frontend phases (default: true if absent)
 - `workflow.ui_safety_gate` — prompt to run /gsd:ui-phase before planning frontend phases (default: true if absent)
+- `workflow.superpowers_execution` — per-task subagent dispatch with TDD and two-stage review (default: false if absent)
 - `model_profile` — which model each agent uses (default: `balanced`)
 - `git.branching_strategy` — branching approach (default: `"none"`)
 </step>
@@ -118,6 +119,15 @@ AskUserQuestion([
     ]
   },
   {
+    question: "Enable Superpowers Execution? (per-task subagents with TDD and review loops)",
+    header: "Superpowers",
+    multiSelect: false,
+    options: [
+      { label: "No (Recommended)", description: "Standard GSD executor — one agent per plan. Faster, lower token cost." },
+      { label: "Yes", description: "Per-task implementer subagents with spec compliance + code quality review after each task. Enforces TDD for tdd='true' tasks. Higher quality, higher token cost." }
+    ]
+  },
+  {
     question: "Git branching strategy?",
     header: "Branching",
     multiSelect: false,
@@ -173,6 +183,7 @@ Merge new settings into existing config.json:
     "nyquist_validation": true/false,
     "ui_phase": true/false,
     "ui_safety_gate": true/false,
+    "superpowers_execution": true/false,
     "text_mode": true/false,
     "research_before_questions": true/false,
     "discuss_mode": "discuss" | "assumptions",
@@ -233,6 +244,7 @@ Write `~/.gsd/defaults.json` with:
     "nyquist_validation": <current>,
     "ui_phase": <current>,
     "ui_safety_gate": <current>,
+    "superpowers_execution": <current>,
     "skip_discuss": <current>
   }
 }

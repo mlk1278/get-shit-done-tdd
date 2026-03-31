@@ -171,6 +171,15 @@ AskUserQuestion([
     ]
   },
   {
+    header: "Superpowers",
+    question: "Enable Superpowers Execution? (per-task TDD and review loops — higher quality, higher token cost)",
+    multiSelect: false,
+    options: [
+      { label: "No", description: "Standard GSD executor — one agent per plan. Faster, lower token cost." },
+      { label: "Yes", description: "Per-task subagents with spec compliance + code quality review. Enforces TDD. Higher quality." }
+    ]
+  },
+  {
     header: "AI Models",
     question: "Which AI models for planning agents?",
     multiSelect: false,
@@ -188,7 +197,7 @@ Create `.planning/config.json` with all settings (CLI fills in remaining default
 
 ```bash
 mkdir -p .planning
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" config-new-project '{"mode":"yolo","granularity":"[selected]","parallelization":true|false,"commit_docs":true|false,"model_profile":"quality|balanced|budget|inherit","workflow":{"research":true|false,"plan_check":true|false,"verifier":true|false,"nyquist_validation":true|false,"auto_advance":true}}'
+node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" config-new-project '{"mode":"yolo","granularity":"[selected]","parallelization":true|false,"commit_docs":true|false,"model_profile":"quality|balanced|budget|inherit","workflow":{"research":true|false,"plan_check":true|false,"verifier":true|false,"nyquist_validation":true|false,"superpowers_execution":true|false,"auto_advance":true}}'
 ```
 
 **If commit_docs = No:** Add `.planning/` to `.gitignore`.
@@ -458,6 +467,7 @@ These spawn additional agents during planning/execution. They add tokens and tim
 | **Researcher** | Before planning each phase | Investigates domain, finds patterns, surfaces gotchas |
 | **Plan Checker** | After plan is created | Verifies plan actually achieves the phase goal |
 | **Verifier** | After phase execution | Confirms must-haves were delivered |
+| **Superpowers** | During execution | Per-task subagents with TDD and spec/quality review loops |
 
 All recommended for important projects. Skip for quick experiments.
 
@@ -491,6 +501,15 @@ questions: [
     ]
   },
   {
+    header: "Superpowers",
+    question: "Enable Superpowers Execution? (per-task TDD and review loops — higher quality, higher token cost)",
+    multiSelect: false,
+    options: [
+      { label: "No", description: "Standard GSD executor — one agent per plan. Faster, lower token cost." },
+      { label: "Yes", description: "Per-task subagents with spec compliance + code quality review. Enforces TDD. Higher quality." }
+    ]
+  },
+  {
     header: "AI Models",
     question: "Which AI models for planning agents?",
     multiSelect: false,
@@ -508,7 +527,7 @@ Create `.planning/config.json` with all settings (CLI fills in remaining default
 
 ```bash
 mkdir -p .planning
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" config-new-project '{"mode":"[yolo|interactive]","granularity":"[selected]","parallelization":true|false,"commit_docs":true|false,"model_profile":"quality|balanced|budget|inherit","workflow":{"research":true|false,"plan_check":true|false,"verifier":true|false,"nyquist_validation":[false if granularity=coarse, true otherwise]}}'
+node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" config-new-project '{"mode":"[yolo|interactive]","granularity":"[selected]","parallelization":true|false,"commit_docs":true|false,"model_profile":"quality|balanced|budget|inherit","workflow":{"research":true|false,"plan_check":true|false,"verifier":true|false,"nyquist_validation":[false if granularity=coarse, true otherwise],"superpowers_execution":true|false}}'
 ```
 
 **Note:** Run `/gsd:settings` anytime to update model profile, workflow agents, branching strategy, and other preferences.
