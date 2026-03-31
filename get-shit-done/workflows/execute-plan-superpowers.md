@@ -43,6 +43,16 @@ if [[ "$INIT" == @file:* ]]; then INIT=$(cat "${INIT#@file:}"); fi
 ```
 
 Extract: `executor_model`, `commit_docs`, `sub_repos`, `phase_dir`, `phase_number`, `plans`, `summaries`, `incomplete_plans`, `state_path`, `config_path`.
+
+**Resolve reviewer models:**
+```bash
+SPEC_REVIEWER_MODEL=$(node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" resolve-model gsd-spec-reviewer 2>/dev/null || echo "sonnet")
+QUALITY_REVIEWER_MODEL=$(node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" resolve-model gsd-quality-reviewer 2>/dev/null || echo "sonnet")
+```
+
+These use GSD's deterministic model resolution (profile → per-agent override → alias map).
+If `resolve-model` is not available as a CLI command, extract from the init JSON or resolve
+using the same `config-get model_profile` + MODEL_PROFILES lookup that `resolveModelInternal` uses.
 </step>
 
 <step name="identify_plan">
@@ -232,6 +242,7 @@ Task(
 ```
 Task(
   description="Review spec compliance for Task {N}",
+  model="{SPEC_REVIEWER_MODEL}",
   prompt="
     You are reviewing whether an implementation matches its GSD plan specification.
 
@@ -286,8 +297,8 @@ Only after spec compliance passes ✅.
 
 ```
 Task(
-  subagent_type="superpowers:code-reviewer",
   description="Review code quality for Task {N}",
+  model="{QUALITY_REVIEWER_MODEL}",
   prompt="
     Review the implementation of Task {N}: {task_name}
 
